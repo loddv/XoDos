@@ -1,0 +1,61 @@
+name: Android Build e Upload do APK
+
+# Define os gatilhos (triggers)
+on:
+  # Dispara automaticamente em pushes para o branch 'main'
+  push:
+    branches:
+      - main
+  # Permite a execução manual através do botão na interface do GitHub
+  workflow_dispatch:
+
+jobs:
+  build:
+    # O executor que irá rodar a Action
+    runs-on: ubuntu-latest
+    
+    # Define o ambiente da Action (execução)
+    steps:
+    
+    # 1. Checkout do Repositório (actions/checkout@v4)
+    - name: ⬇️ Checkout do Repositório e Submódulos
+      uses: actions/checkout@v4
+      with:
+        # A flag 'submodules' garante que os submódulos sejam inicializados e atualizados
+        submodules: true
+
+    # 2. Configurar o JDK e Caching (actions/setup-java@v4)
+    # A v4 é a versão mais moderna e inclui caching otimizado para Gradle
+    - name: ☕ Configurar o JDK 17 e Cache do Gradle
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17' # Versão recomendada para builds Android/Gradle modernos
+        distribution: 'temurin'
+        # Habilita o cache otimizado para dependências do Gradle
+        cache: 'gradle' 
+
+    # 3. Executar o syncDebugJarLibs
+    - name: 🔄 Sincronizar Bibliotecas (syncDebugJarLibs)
+      # O uso do 'sh' é explícito para boa prática, embora seja o padrão em ubuntu-latest
+      shell: sh
+      run: ./gradlew syncDebugJarLibs
+      
+    # 4. Executar o Build (assembleDebug)
+    - name: 🏗️ Construir o APK Debug (assembleDebug)
+      shell: sh
+      run: ./gradlew assembleDebug
+
+    # 5. Localizar e Fazer o Upload do APK (actions/upload-artifact@v4)
+    # A v4 do upload-artifact é a mais moderna
+    - name: ⬆️ Upload do APK como Artefato
+      uses: actions/upload-artifact@v4
+      with:
+        # Nome do artefato (como aparecerá na página do workflow)
+        name: XoDos-APK-Debug
+        # Caminho onde o Gradle geralmente coloca o APK de Debug
+        # O uso de wildcard ** garante que encontre o arquivo, independente da estrutura exata
+        path: '**/*-debug.apk'
+        # Configuração moderna da v4: se o arquivo não for encontrado, falha o passo (erro)
+        if-no-files-found: error 
+        # Tempo que o artefato será mantido (7 dias é o padrão comum)
+        retention-days: 7
