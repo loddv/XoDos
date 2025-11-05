@@ -43,10 +43,10 @@ jobs:
       run: git submodule update --init --recursive
 
     # 3. Executar o syncDebugJarLibs
-    - name: 🔄 Sincronizar Bibliotecas (syncDebugJarLibs)
-      # O uso do 'sh' é explícito para boa prática, embora seja o padrão em ubuntu-latest
-      shell: sh
-      run: ./gradlew syncDebugJarLibs
+    # - name: 🔄 Sincronizar Bibliotecas (syncDebugJarLibs)
+    #   # O uso do 'sh' é explícito para boa prática, embora seja o padrão em ubuntu-latest
+    #   shell: sh
+    #   run: ./gradlew syncDebugJarLibs
       
     # 4. Executar o Build (assembleDebug)
     - name: 🏗️ Construir o APK Debug (assembleDebug)
