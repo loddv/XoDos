@@ -37,6 +37,10 @@ jobs:
     - name: Set Permission
       shell: bash
       run: chmod +x ./gradlew
+    
+    - name: load submodule
+      shell: bash
+      run: git submodule update --init --recursive
 
     # 3. Executar o syncDebugJarLibs
     - name: 🔄 Sincronizar Bibliotecas (syncDebugJarLibs)
